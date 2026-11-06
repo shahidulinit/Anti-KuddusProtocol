@@ -1,31 +1,39 @@
 import { useEffect, useState } from "react";
 
-/* =========================================================================
-   PERSISTENT STORAGE
-   Note to the requester: true browser localStorage is not available inside
-   this artifact sandbox, so "store locally" is implemented with Claude's
-   equivalent — per-user (non-shared) persistent key/value storage. It
-   behaves the same way from the user's perspective: data survives refresh
-   and is private to this device/account, without being visible to anyone
-   else. Swap the two window.storage calls below for window.localStorage
-   verbatim if you move this file into a normal browser environment.
-   ========================================================================= */
+/*
+ * Browser persistence for the deployed website. The previous implementation
+ * depended on window.storage, an API that exists in some preview sandboxes but
+ * not in a normal browser or on GitHub Pages.
+ */
+function readValue(key) {
+  try {
+    const value = window.localStorage.getItem(key);
+    return value === null ? null : JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
+function writeValue(key, value) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage can be unavailable in private/restricted browsing contexts.
+  }
+}
+
 export function usePersistentState(key, initialValue) {
   const [state, setState] = useState(initialValue);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      try {
-        const res = await window.storage.get(key, false);
-        if (!cancelled && res && res.value) setState(JSON.parse(res.value));
-      } catch {
-        /* no record yet */
-      } finally {
-        if (!cancelled) setHydrated(true);
-      }
-    })();
+    try {
+      const storedValue = readValue(key);
+      if (!cancelled && storedValue !== null) setState(storedValue);
+    } finally {
+      if (!cancelled) setHydrated(true);
+    }
     return () => {
       cancelled = true;
     };
@@ -33,38 +41,24 @@ export function usePersistentState(key, initialValue) {
   }, [key]);
 
   useEffect(() => {
-    if (!hydrated) return;
-    (async () => {
-      try {
-        await window.storage.set(key, JSON.stringify(state), false);
-      } catch {
-        /* best effort */
-      }
-    })();
+    if (hydrated) writeValue(key, state);
   }, [state, hydrated, key]);
 
   return [state, setState, hydrated];
 }
 
 export async function loadKey(key) {
-  try {
-    const res = await window.storage.get(key, false);
-    return res ? JSON.parse(res.value) : null;
-  } catch {
-    return null;
-  }
+  return readValue(key);
 }
-export async function saveKey(key, val) {
-  try {
-    await window.storage.set(key, JSON.stringify(val), false);
-  } catch {
-    /* best effort */
-  }
+
+export async function saveKey(key, value) {
+  writeValue(key, value);
 }
+
 export async function clearKey(key) {
   try {
-    await window.storage.delete(key, false);
+    window.localStorage.removeItem(key);
   } catch {
-    /* nothing to clear */
+    // Storage can be unavailable in private/restricted browsing contexts.
   }
 }
