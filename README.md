@@ -1,19 +1,19 @@
 # Anti-Kuddus Protocol
 
-A classroom case-file dashboard for Section B. Anti-Kuddus Protocol brings class tools into one playful, investigation-themed website: track reports, check classroom rules, find your seat, review syllabus topics, and access quick classroom utilities.
+A classroom case file dashboard for Section B. Anti-Kuddus Protocol brings class tools into one playful, investigation themed website: track reports, check classroom rules, find your seat, review syllabus topics, and access quick classroom utilities.
 
 > **Project status:** This is a front-end web app and prototype. It does not provide a server-side account system or shared database. Data saved by the app is stored in the current browser.
 
 ## What you can do
 
-- **Dashboard** — View the case-file overview and navigate to the app’s tools.
-- **Strike Portal** — Record classroom reports and review the strike log.
-- **Seating** — View the classroom seating section.
-- **Syllabus Digest** — Paste syllabus text and extract a short list of topics. The app attempts an AI-powered summary and falls back to a local text extractor if that request fails.
-- **Ledger** — Access the classroom ledger tools.
-- **SOS** — Open the classroom alert area.
-- **Fact Checker** — Check information against the classroom rulebook.
-- **Light and dark themes** — Switch between the app’s available visual themes.
+- **Dashboard** - View the case-file overview and navigate to the app’s tools.
+- **Strike Portal** - Record classroom reports and review the strike log.
+- **Seating** - View the classroom seating section.
+- **Syllabus Digest** - Paste syllabus text and extract a short list of topics. The app attempts an AI powered summary and falls back to a local text extractor if that request fails.
+- **Ledger** - Access the classroom ledger tools.
+- **SOS** - Open the classroom alert area.
+- **Fact Checker** - Check information against the classroom rulebook.
+- **Light and dark themes** - Switch between the app’s available visual themes.
 
 ## Tech stack
 
@@ -75,7 +75,7 @@ Install dependencies in `anti-kuddus-protocol/` before using those root-level sc
 ## Data, privacy, and AI
 
 - Session, theme, and strike state are persisted in the browser’s `localStorage`. They are not synchronized across browsers or devices, and clearing site data removes them.
-- The roll-number entry is a client-side app flow, not secure authentication. Do not enter sensitive personal information or treat reports as confidential records.
+- The roll number entry is a client-side app flow, not secure authentication. Do not enter sensitive personal information or treat reports as confidential records.
 - The Syllabus Digest sends pasted text to the Anthropic Messages API when the AI request succeeds. The request is made directly from the browser in the current implementation; a production deployment should route it through a backend that securely manages API credentials. If the AI request fails, the app uses a local text-extraction fallback.
 
 ## Typography
